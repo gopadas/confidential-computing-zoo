@@ -19,6 +19,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV INSTALL_PREFIX=/usr/local
 ENV LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:${INSTALL_PREFIX}/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
 ENV PATH=${INSTALL_PREFIX}/bin:${LD_LIBRARY_PATH}:${PATH}
+ENV PYTHONPATH=${INSTALL_PREFIX}/lib/python3.8/site-packages:$PYTHONPATH
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 # Install initial dependencies
@@ -64,9 +65,8 @@ ENV WERROR=1
 ENV SGX=1
 
 RUN ln -s /usr/bin/python3 /usr/bin/python \
-    && pip3 install --no-cache-dir --upgrade \
-        'pip>=23.1.2' 'wheel>=0.38.0' 'toml>=0.10' 'meson>=0.55' 'cryptography>=41.0.1' 'pyelftools>=0.29' 'setuptools==44.1.1' \
-        'numpy==1.23.5' 'keras_preprocessing>=1.1.2' 'pandas==1.5.2' 'scikit-learn==1.1.3' 'matplotlib>=3.7.1'
+    && python3 -B -m pip install --no-cache-dir \
+        'pip==23.1.*' 'wheel==0.40.*' 'setuptools==65.5.*' 'toml==0.10.*' 'meson==1.1.*' 'cryptography==41.0.*' 'pyelftools>=0.29.*' 'numpy==1.23.5' 'keras_preprocessing==1.1.2' 'pandas==1.5.2' 'scikit-learn==1.1.3' 'matplotlib==3.7.*' 'certifi==2023.7.*' 'jinja2==2.11.*' 'protobuf==3.20.*' 'requests==2.31.*' 'patchelf==0.17.2.*' 'urllib3==1.26.*'
 
 WORKDIR ${GRAMINEDIR}
 RUN git clone https://github.com/gramineproject/gramine.git ${GRAMINEDIR} \
@@ -97,12 +97,12 @@ RUN make static \
     && cp -r ./*.h ${INSTALL_PREFIX}/include/cjson
 
 # bazel
-ENV BAZEL_VERSION=3.1.0
+ENV BAZEL_VERSION=5.3.0
 RUN wget -q "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" \
  && dpkg -i bazel_*.deb
 
 # config and download TensorFlow
-ENV TF_VERSION=v2.4.2
+ENV TF_VERSION=v2.11.1
 ENV TF_BUILD_PATH=/tf/src
 ENV TF_BUILD_OUTPUT=/tf/output
 RUN git clone  --recurse-submodules -b ${TF_VERSION} https://github.com/tensorflow/tensorflow ${TF_BUILD_PATH}
@@ -113,7 +113,7 @@ COPY patches/gramine ${GRAMINEDIR}
 # git apply diff
 COPY patches/tf ${TF_BUILD_PATH}
 WORKDIR ${TF_BUILD_PATH}
-RUN git apply tf2_4.diff
+RUN git apply tf2_11.diff
 
 # build and install TensorFlow
 WORKDIR ${TF_BUILD_PATH}

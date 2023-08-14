@@ -96,7 +96,7 @@ RUN cd /usr/bin && curl -fLO https://releases.bazel.build/3.1.0/release/bazel-3.
 RUN python3 -m pip install numpy keras_preprocessing cryptography && pip3 install --upgrade pip setuptools==44.1.1
 
 # config and download TensorFlow
-ENV TF_VERSION=v2.4.2
+ENV TF_VERSION=v2.11.1
 ENV TF_BUILD_PATH=/tf/src
 ENV TF_BUILD_OUTPUT=/tf/output
 RUN git clone  --recurse-submodules -b ${TF_VERSION} https://github.com/tensorflow/tensorflow ${TF_BUILD_PATH}
@@ -106,7 +106,7 @@ COPY patches/gramine ${GRAMINEDIR}
 
 # git apply diff
 COPY patches/tf ${TF_BUILD_PATH}
-RUN cd ${TF_BUILD_PATH} && git apply tf2_4.diff
+RUN cd ${TF_BUILD_PATH} && git apply tf2_11.diff
 
 # build and install TensorFlow
 RUN cd ${TF_BUILD_PATH} && ./build.sh anolisos

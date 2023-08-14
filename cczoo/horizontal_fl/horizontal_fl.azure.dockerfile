@@ -117,7 +117,7 @@ RUN wget -q "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSI
  && dpkg -i bazel_*.deb
 
 # config and download TensorFlow
-ENV TF_VERSION=v2.13.0
+ENV TF_VERSION=v2.11.1
 ENV TF_BUILD_PATH=/tf/src
 ENV TF_BUILD_OUTPUT=/tf/output
 RUN git clone  --recurse-submodules -b ${TF_VERSION} https://github.com/tensorflow/tensorflow ${TF_BUILD_PATH}
@@ -128,7 +128,7 @@ COPY patches/gramine ${GRAMINEDIR}
 # git apply diff
 COPY patches/tf ${TF_BUILD_PATH}
 WORKDIR ${TF_BUILD_PATH}
-RUN git apply tf2_13_no_grpc_channel.diff
+RUN git apply tf2_11.diff
 
 # build and install TensorFlow
 WORKDIR ${TF_BUILD_PATH}
